@@ -92,12 +92,20 @@ const Index = () => {
     ]);
   };
 
-  const resetBird = () => {
-    if (birdsLeft > 0) {
-      setBirdsLeft(prev => prev - 1);
-      setBird({ x: 100, y: 300, vx: 0, vy: 0, launched: false, active: true });
+  useEffect(() => {
+    if (!bird.active && !bird.launched) return;
+    
+    if (!bird.active && bird.launched) {
+      const timer = setTimeout(() => {
+        if (birdsLeft > 0) {
+          setBirdsLeft(prev => prev - 1);
+          setBird({ x: 100, y: 300, vx: 0, vy: 0, launched: false, active: true });
+        }
+      }, 1000);
+      
+      return () => clearTimeout(timer);
     }
-  };
+  }, [bird.active, bird.launched, birdsLeft]);
 
   useEffect(() => {
     if (gameState !== 'playing') return;
@@ -140,13 +148,11 @@ const Index = () => {
             newVx = newVx * 0.8;
             
             if (Math.abs(newVy) < 0.5 && Math.abs(newVx) < 0.5) {
-              setTimeout(resetBird, 1000);
               return { ...prev, vx: 0, vy: 0, active: false };
             }
           }
 
           if (newX > canvas.width || newX < 0 || newY > canvas.height) {
-            setTimeout(resetBird, 500);
             return { ...prev, active: false };
           }
 
@@ -391,7 +397,7 @@ const Index = () => {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [gameState, bird, pigs, trajectory]);
+  }, [gameState, bird, pigs, blocks, trajectory]);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (bird.launched || !bird.active) return;
@@ -532,10 +538,14 @@ const Index = () => {
 
       {gameState === 'playing' && (
         <div className="relative">
-          <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-6 py-3 rounded-2xl shadow-lg">
+          <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-6 py-3 rounded-2xl shadow-lg flex gap-6">
             <div className="flex items-center gap-2">
               <Icon name="Star" className="text-yellow-500" size={24} />
               <span className="text-2xl font-bold">{score}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">🐦</span>
+              <span className="text-2xl font-bold">× {birdsLeft}</span>
             </div>
           </div>
           
