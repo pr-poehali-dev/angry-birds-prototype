@@ -22,6 +22,16 @@ interface Pig {
   active: boolean;
 }
 
+interface Block {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  type: 'wood' | 'stone' | 'ice';
+  health: number;
+  active: boolean;
+}
+
 interface Level {
   id: number;
   stars: number;
@@ -32,11 +42,20 @@ interface Level {
 const Index = () => {
   const [gameState, setGameState] = useState<GameState>('menu');
   const [score, setScore] = useState(0);
+  const [birdsLeft, setBirdsLeft] = useState(3);
   const [bird, setBird] = useState<Bird>({ x: 100, y: 300, vx: 0, vy: 0, launched: false, active: true });
   const [pigs, setPigs] = useState<Pig[]>([
     { x: 600, y: 350, health: 100, active: true },
     { x: 700, y: 350, health: 100, active: true },
     { x: 650, y: 250, health: 100, active: true },
+  ]);
+  const [blocks, setBlocks] = useState<Block[]>([
+    { x: 580, y: 320, width: 40, height: 60, type: 'wood', health: 100, active: true },
+    { x: 620, y: 320, width: 40, height: 60, type: 'wood', health: 100, active: true },
+    { x: 600, y: 260, width: 60, height: 20, type: 'wood', health: 100, active: true },
+    { x: 680, y: 320, width: 40, height: 60, type: 'stone', health: 150, active: true },
+    { x: 720, y: 320, width: 40, height: 60, type: 'stone', health: 150, active: true },
+    { x: 700, y: 260, width: 60, height: 20, type: 'stone', health: 150, active: true },
   ]);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -56,12 +75,28 @@ const Index = () => {
   const startGame = () => {
     setGameState('playing');
     setScore(0);
+    setBirdsLeft(3);
     setBird({ x: 100, y: 300, vx: 0, vy: 0, launched: false, active: true });
     setPigs([
       { x: 600, y: 350, health: 100, active: true },
       { x: 700, y: 350, health: 100, active: true },
       { x: 650, y: 250, health: 100, active: true },
     ]);
+    setBlocks([
+      { x: 580, y: 320, width: 40, height: 60, type: 'wood', health: 100, active: true },
+      { x: 620, y: 320, width: 40, height: 60, type: 'wood', health: 100, active: true },
+      { x: 600, y: 260, width: 60, height: 20, type: 'wood', health: 100, active: true },
+      { x: 680, y: 320, width: 40, height: 60, type: 'stone', health: 150, active: true },
+      { x: 720, y: 320, width: 40, height: 60, type: 'stone', health: 150, active: true },
+      { x: 700, y: 260, width: 60, height: 20, type: 'stone', health: 150, active: true },
+    ]);
+  };
+
+  const resetBird = () => {
+    if (birdsLeft > 0) {
+      setBirdsLeft(prev => prev - 1);
+      setBird({ x: 100, y: 300, vx: 0, vy: 0, launched: false, active: true });
+    }
   };
 
   useEffect(() => {
@@ -133,7 +168,57 @@ const Index = () => {
           }
           return pig;
         }));
+
+        setBlocks(prevBlocks => prevBlocks.map(block => {
+          if (!block.active) return block;
+          
+          if (
+            bird.x > block.x && 
+            bird.x < block.x + block.width &&
+            bird.y > block.y && 
+            bird.y < block.y + block.height
+          ) {
+            const damage = block.type === 'wood' ? 60 : block.type === 'stone' ? 40 : 80;
+            const newHealth = block.health - damage;
+            if (newHealth <= 0) {
+              setScore(prev => prev + 500);
+              return { ...block, active: false };
+            }
+            return { ...block, health: newHealth };
+          }
+          return block;
+        }));
       }
+
+      blocks.forEach(block => {
+        if (!block.active) return;
+        
+        if (block.type === 'wood') {
+          ctx.fillStyle = '#92400E';
+          ctx.strokeStyle = '#78350F';
+        } else if (block.type === 'stone') {
+          ctx.fillStyle = '#78716C';
+          ctx.strokeStyle = '#57534E';
+        } else {
+          ctx.fillStyle = '#E0F2FE';
+          ctx.strokeStyle = '#BAE6FD';
+        }
+        
+        ctx.fillRect(block.x, block.y, block.width, block.height);
+        ctx.lineWidth = 2;
+        ctx.strokeRect(block.x, block.y, block.width, block.height);
+        
+        if (block.type === 'wood') {
+          ctx.strokeStyle = '#78350F';
+          ctx.lineWidth = 1;
+          for (let i = 0; i < block.height; i += 10) {
+            ctx.beginPath();
+            ctx.moveTo(block.x, block.y + i);
+            ctx.lineTo(block.x + block.width, block.y + i);
+            ctx.stroke();
+          }
+        }
+      });
 
       if (trajectory.length > 0) {
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
