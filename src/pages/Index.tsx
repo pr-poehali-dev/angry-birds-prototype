@@ -140,11 +140,13 @@ const Index = () => {
             newVx = newVx * 0.8;
             
             if (Math.abs(newVy) < 0.5 && Math.abs(newVx) < 0.5) {
+              setTimeout(resetBird, 1000);
               return { ...prev, vx: 0, vy: 0, active: false };
             }
           }
 
-          if (newX > canvas.width || newX < 0) {
+          if (newX > canvas.width || newX < 0 || newY > canvas.height) {
+            setTimeout(resetBird, 500);
             return { ...prev, active: false };
           }
 
@@ -233,54 +235,150 @@ const Index = () => {
         ctx.setLineDash([]);
       }
 
+      ctx.fillStyle = '#DC2626';
+      ctx.beginPath();
+      ctx.arc(bird.x, bird.y, 22, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.strokeStyle = '#7F1D1D';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(bird.x, bird.y, 22, 0, Math.PI * 2);
+      ctx.stroke();
+
       ctx.fillStyle = '#EF4444';
       ctx.beginPath();
-      ctx.arc(bird.x, bird.y, 20, 0, Math.PI * 2);
+      ctx.arc(bird.x - 2, bird.y - 2, 18, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = '#FFF';
+      ctx.fillStyle = '#FFFFFF';
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.arc(bird.x + 5, bird.y - 5, 6, 0, Math.PI * 2);
+      ctx.arc(bird.x + 6, bird.y - 6, 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#000000';
+      ctx.beginPath();
+      ctx.arc(bird.x + 8, bird.y - 6, 4, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = '#000';
+      ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();
-      ctx.arc(bird.x + 7, bird.y - 5, 3, 0, Math.PI * 2);
+      ctx.arc(bird.x + 9, bird.y - 8, 2, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = '#F59E0B';
+      ctx.fillStyle = '#FCD34D';
+      ctx.strokeStyle = '#92400E';
+      ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(bird.x + 15, bird.y);
-      ctx.lineTo(bird.x + 25, bird.y - 5);
-      ctx.lineTo(bird.x + 25, bird.y + 5);
+      ctx.moveTo(bird.x + 18, bird.y - 2);
+      ctx.lineTo(bird.x + 28, bird.y - 6);
+      ctx.lineTo(bird.x + 28, bird.y + 2);
       ctx.closePath();
       ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#000000';
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(bird.x - 2, bird.y + 4);
+      ctx.quadraticCurveTo(bird.x + 2, bird.y + 2, bird.x + 6, bird.y + 4);
+      ctx.stroke();
+
+      ctx.fillStyle = '#FCA5A5';
+      ctx.beginPath();
+      ctx.ellipse(bird.x - 8, bird.y + 2, 4, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#7F1D1D';
+      ctx.lineWidth = 2;
+      ctx.stroke();
 
       pigs.forEach(pig => {
         if (!pig.active) return;
         
+        ctx.fillStyle = '#059669';
+        ctx.beginPath();
+        ctx.arc(pig.x, pig.y, 28, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.strokeStyle = '#065F46';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(pig.x, pig.y, 28, 0, Math.PI * 2);
+        ctx.stroke();
+
         ctx.fillStyle = '#10B981';
         ctx.beginPath();
-        ctx.arc(pig.x, pig.y, 25, 0, Math.PI * 2);
+        ctx.arc(pig.x, pig.y - 2, 25, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.fillStyle = '#FFF';
+        ctx.fillStyle = '#34D399';
         ctx.beginPath();
-        ctx.arc(pig.x - 8, pig.y - 5, 7, 0, Math.PI * 2);
-        ctx.arc(pig.x + 8, pig.y - 5, 7, 0, Math.PI * 2);
+        ctx.arc(pig.x - 8, pig.y - 8, 10, 0, Math.PI * 2);
+        ctx.arc(pig.x + 8, pig.y - 8, 10, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.fillStyle = '#000';
+        ctx.fillStyle = '#FFFFFF';
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.arc(pig.x - 8, pig.y - 5, 3, 0, Math.PI * 2);
-        ctx.arc(pig.x + 8, pig.y - 5, 3, 0, Math.PI * 2);
+        ctx.arc(pig.x - 8, pig.y - 8, 8, 0, Math.PI * 2);
         ctx.fill();
+        ctx.stroke();
+        
+        ctx.beginPath();
+        ctx.arc(pig.x + 8, pig.y - 8, 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#000000';
+        ctx.beginPath();
+        ctx.arc(pig.x - 8, pig.y - 8, 4, 0, Math.PI * 2);
+        ctx.arc(pig.x + 8, pig.y - 8, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#FFFFFF';
+        ctx.beginPath();
+        ctx.arc(pig.x - 7, pig.y - 10, 2, 0, Math.PI * 2);
+        ctx.arc(pig.x + 9, pig.y - 10, 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#FDE047';
+        ctx.strokeStyle = '#92400E';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(pig.x - 3, pig.y + 3);
+        ctx.quadraticCurveTo(pig.x, pig.y + 6, pig.x + 3, pig.y + 3);
+        ctx.stroke();
 
         ctx.fillStyle = '#065F46';
         ctx.beginPath();
-        ctx.arc(pig.x - 5, pig.y + 10, 3, 0, Math.PI * 2);
-        ctx.arc(pig.x + 5, pig.y + 10, 3, 0, Math.PI * 2);
+        ctx.ellipse(pig.x - 2, pig.y + 8, 3, 4, 0, 0, Math.PI * 2);
+        ctx.ellipse(pig.x + 2, pig.y + 8, 3, 4, 0, 0, Math.PI * 2);
         ctx.fill();
+
+        ctx.fillStyle = '#34D399';
+        ctx.strokeStyle = '#065F46';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(pig.x - 18, pig.y - 12, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        
+        ctx.beginPath();
+        ctx.arc(pig.x + 18, pig.y - 12, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        const headbandY = pig.y - 20;
+        ctx.strokeStyle = '#DC2626';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(pig.x, pig.y, 28, Math.PI * 1.2, Math.PI * 1.8);
+        ctx.stroke();
       });
 
       animationRef.current = requestAnimationFrame(animate);
